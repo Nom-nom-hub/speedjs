@@ -1,1 +1,173 @@
-[]
+[
+  {
+    "schemaVersion": "1.0",
+    "framework": "speedjs",
+    "app": "starter",
+    "source": "@speedjs/bench + examples/starter",
+    "commit": "e4b620642ea570a59711819c89b026d088a4d019",
+    "branch": "main",
+    "timestamp": "2026-06-23T21:26:43.750Z",
+    "machine": {
+      "platform": "darwin",
+      "cpu": "Apple M1",
+      "cores": 8,
+      "memory": "8.0GB",
+      "node": "v26.0.0",
+      "bun": "1.3.14",
+      "pnpm": "8.15.0"
+    },
+    "commands": {
+      "install": "pnpm install",
+      "build": "pnpm build",
+      "bench": "pnpm bench"
+    },
+    "metrics": {
+      "initialJsKb": {
+        "value": 18.0986328125,
+        "unit": "kb",
+        "min": 18.0986328125,
+        "max": 18.0986328125,
+        "samples": [
+          18.0986328125,
+          18.0986328125,
+          18.0986328125,
+          18.0986328125,
+          18.0986328125
+        ],
+        "measured": true,
+        "source": "sum of dist/assets/*.js sizes (median of 5 runs after 2 warmups)"
+      },
+      "routeRenderMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "would have been: 1000-iteration addition loop",
+        "reason": "synthetic loop does not exercise the route renderer; no real measurement performed"
+      },
+      "hydrationMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "would have been: @speedjs/dom.mount() on synthetic node",
+        "reason": "mount target is a mock object; not representative of real DOM hydration"
+      },
+      "apiLatencyMs": {
+        "value": 2.6751670000003287,
+        "unit": "ms",
+        "min": 2.2632919999996375,
+        "max": 3.082959000000301,
+        "samples": [
+          3.082959000000301,
+          2.8098330000002534,
+          2.2632919999996375,
+          2.6751670000003287,
+          2.3118750000003274
+        ],
+        "measured": true,
+        "source": "fetch of local dev server health endpoint (median of 5 successful runs)"
+      },
+      "buildTimeMs": {
+        "value": 705.97525,
+        "unit": "ms",
+        "min": 703.103791,
+        "max": 790.929416,
+        "samples": [
+          703.103791,
+          705.97525,
+          750.7254170000001,
+          703.9860419999995,
+          790.929416
+        ],
+        "measured": true,
+        "source": "vite build command (median of 5 runs after 2 warmups)"
+      },
+      "devServerBootMs": {
+        "value": 559.6804999999995,
+        "unit": "ms",
+        "min": 517.4370830000007,
+        "max": 5546.827958,
+        "samples": [
+          559.6804999999995,
+          535.6587499999996,
+          517.4370830000007,
+          5546.827958,
+          584.6649589999997
+        ],
+        "measured": true,
+        "source": "vite dev server spawn until \"Local:\" banner (median of 5 runs)"
+      },
+      "ssrRenderMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "@speedjs/server.renderToString(\"<div>benchmark</div>\")",
+        "reason": "@speedjs/server package not loadable; falling back would have hidden the truth"
+      },
+      "staticGenTimeMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "@speedjs/server.renderToString(\"<div>static benchmark content</div>\")",
+        "reason": "@speedjs/server package not loadable"
+      },
+      "memoryUsageMb": {
+        "value": 11.438194274902344,
+        "unit": "mb",
+        "min": 11.42669677734375,
+        "max": 11.441658020019531,
+        "samples": [
+          11.42669677734375,
+          11.43634033203125,
+          11.438194274902344,
+          11.440185546875,
+          11.441658020019531
+        ],
+        "measured": true,
+        "source": "process.memoryUsage().heapUsed (median of 5 samples)"
+      }
+    },
+    "budget": {
+      "status": "passed",
+      "dataQuality": "insufficient",
+      "measuredCount": 2,
+      "unmeasuredMetrics": [
+        "hydrationMs",
+        "routeRenderMs",
+        "ssrRenderMs",
+        "staticGenTimeMs"
+      ],
+      "failures": [],
+      "actionable": [
+        "Benchmark data is incomplete. Not measured: hydrationMs, routeRenderMs, ssrRenderMs, staticGenTimeMs. These metrics were not measured in this environment; the budget cannot fully judge them."
+      ],
+      "limits": {
+        "initialJsKb": {
+          "value": 40,
+          "unit": "kb"
+        },
+        "buildTimeMs": {
+          "value": 3000,
+          "unit": "ms"
+        },
+        "hydrationMs": {
+          "value": 50,
+          "unit": "ms"
+        }
+      }
+    },
+    "methodology": {
+      "runs": 5,
+      "warmups": 2,
+      "reportedValue": "median",
+      "notes": [
+        "Initial JS and build time measured against production vite build output",
+        "Route render is not measured; the synthetic loop previously used was removed for honesty",
+        "API latency measured against local dev server health endpoint when available",
+        "SSR/static gen measured from @speedjs/server when loadable; otherwise marked not_measured",
+        "Hydration not measured: a mock DOM node is not representative",
+        "Memory usage measured via process.memoryUsage().heapUsed",
+        "Dev server boot measured from spawn to first Local: output"
+      ]
+    }
+  }
+]
