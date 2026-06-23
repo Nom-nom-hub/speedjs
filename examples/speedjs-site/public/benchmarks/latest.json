@@ -41,14 +41,14 @@
       "unit": "ms",
       "measured": false,
       "source": "would have been: 1000-iteration loop — does not exercise route renderer",
-      "reason": "legacy sample looks synthetic (median=0.01ms); tagged not_measured for honesty"
+      "reason": "no finite samples recorded for this metric"
     },
     "hydrationMs": {
       "value": null,
       "unit": "ms",
       "measured": false,
       "source": "would have been: @speedjs/dom.mount() — currently not a real measurement",
-      "reason": "legacy sample looks synthetic (median=0.1ms); tagged not_measured for honesty"
+      "reason": "no finite samples recorded for this metric"
     },
     "apiLatencyMs": {
       "value": 1.94,
@@ -100,14 +100,14 @@
       "unit": "ms",
       "measured": false,
       "source": "@speedjs/server.renderToString on synthetic tree",
-      "reason": "legacy sample looks synthetic (median=0.11ms); tagged not_measured for honesty"
+      "reason": "no finite samples recorded for this metric"
     },
     "staticGenTimeMs": {
       "value": null,
       "unit": "ms",
       "measured": false,
       "source": "@speedjs/server.renderToString on static markup",
-      "reason": "legacy sample looks synthetic (median=0.1ms); tagged not_measured for honesty"
+      "reason": "no finite samples recorded for this metric"
     },
     "memoryUsageMb": {
       "value": 19.22,

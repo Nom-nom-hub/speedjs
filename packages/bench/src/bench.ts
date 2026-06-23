@@ -357,9 +357,21 @@ function summarize(m: Metric): string {
  * overByPercent is computed as (actual - limit) / limit * 100 when measured and
  * over budget, otherwise 0.
  */
+/**
+ * Metrics tracked for completeness but NOT budget-evaluated. If a future
+ * limit lands on one of these keys (e.g. `routeJsKb` joins `routeRenderMs`),
+ * add it here so `dataQuality` computation sees the actual supplementary set.
+ */
+const ADDITIONAL_METRIC_KEYS: MetricKey[] = [
+  'routeRenderMs',
+  'apiLatencyMs',
+  'ssrRenderMs',
+  'staticGenTimeMs',
+]
+
 export function evaluateBudget(metrics: Metrics, limits: BudgetLimits): BudgetEvaluation {
   const failures: BudgetFailure[] = []
-  const unmeasured: MetricKey[] = []
+  const unmeasuredSet = new Set<MetricKey>()
   const actionable: string[] = []
   let measuredCount = 0
 
@@ -372,7 +384,7 @@ export function evaluateBudget(metrics: Metrics, limits: BudgetLimits): BudgetEv
   for (const [key, metric, limit] of checks) {
     if (!limit) continue
     if (!metric.measured || metric.value === null) {
-      unmeasured.push(key)
+      unmeasuredSet.add(key)
       continue
     }
     measuredCount++
@@ -388,23 +400,19 @@ export function evaluateBudget(metrics: Metrics, limits: BudgetLimits): BudgetEv
     }
   }
 
-  if (metrics.routeRenderMs && !metrics.routeRenderMs.measured) {
-    unmeasured.push('routeRenderMs')
-  }
-  if (metrics.apiLatencyMs && !metrics.apiLatencyMs.measured) {
-    unmeasured.push('apiLatencyMs')
-  }
-  if (metrics.ssrRenderMs && !metrics.ssrRenderMs.measured) {
-    unmeasured.push('ssrRenderMs')
-  }
-  if (metrics.staticGenTimeMs && !metrics.staticGenTimeMs.measured) {
-    unmeasured.push('staticGenTimeMs')
+  // Additional (non-budgeted) metrics: only flag unmeasured — they cannot
+  // produce failures because they have no limit. The Set ensures no key
+  // ever appears in BOTH unmeasuredMetrics and failures[] even if a future
+  // budget limit coincides with one of these keys.
+  for (const key of ADDITIONAL_METRIC_KEYS) {
+    if (metrics[key] && !metrics[key].measured) unmeasuredSet.add(key)
   }
 
   for (const f of failures) {
     actionable.push(...actionableFor(f))
   }
 
+  const unmeasured = Array.from(unmeasuredSet)
   if (unmeasured.length > 0) {
     actionable.push(
       `Benchmark data is incomplete. Not measured: ${unmeasured.join(', ')}. ` +
@@ -412,11 +420,14 @@ export function evaluateBudget(metrics: Metrics, limits: BudgetLimits): BudgetEv
     )
   }
 
-  const totalMetrics = Object.keys(checks).length + 4 // 4 additional metrics tracked for completeness
+  // dataQuality is derived from the additional metric slots: if every
+  // supplementary measure is missing, the artifact can't characterize the
+  // framework's behavior even when the budget itself is satisfied.
+  const totalBudgetMetrics = ADDITIONAL_METRIC_KEYS.length
   const dataQuality: 'complete' | 'partial' | 'insufficient' =
-    unmeasured.length === totalMetrics
+    unmeasured.length >= totalBudgetMetrics
       ? 'insufficient'
-      : unmeasured.length >= totalMetrics / 2
+      : unmeasured.length >= totalBudgetMetrics / 2
         ? 'insufficient'
         : unmeasured.length === 0
           ? 'complete'
@@ -426,7 +437,7 @@ export function evaluateBudget(metrics: Metrics, limits: BudgetLimits): BudgetEv
     status: failures.length === 0 ? 'passed' : 'failed',
     dataQuality,
     measuredCount,
-    unmeasuredMetrics: Array.from(new Set(unmeasured)),
+    unmeasuredMetrics: unmeasured,
     failures,
     actionable,
     limits,
