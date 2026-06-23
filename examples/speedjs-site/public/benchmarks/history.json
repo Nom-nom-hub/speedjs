@@ -4,6 +4,177 @@
     "framework": "speedjs",
     "app": "starter",
     "source": "@speedjs/bench + examples/starter",
+    "commit": "76df228512680ffdb0c553b1ebdf1d39e37a6b62",
+    "branch": "main",
+    "timestamp": "2026-06-23T21:34:04.821Z",
+    "machine": {
+      "platform": "darwin",
+      "cpu": "Apple M1",
+      "cores": 8,
+      "memory": "8.0GB",
+      "node": "v26.0.0",
+      "bun": "1.3.14",
+      "pnpm": "8.15.0"
+    },
+    "commands": {
+      "install": "pnpm install",
+      "build": "pnpm build",
+      "bench": "pnpm bench"
+    },
+    "metrics": {
+      "initialJsKb": {
+        "value": 18.0986328125,
+        "unit": "kb",
+        "min": 18.0986328125,
+        "max": 18.0986328125,
+        "samples": [
+          18.0986328125,
+          18.0986328125,
+          18.0986328125,
+          18.0986328125,
+          18.0986328125
+        ],
+        "measured": true,
+        "source": "sum of dist/assets/*.js sizes (median of 5 runs after 2 warmups)"
+      },
+      "routeRenderMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "@speedjs/router.matchRoute",
+        "reason": "@speedjs/router not loadable: Cannot find package '@speedjs/router' imported from /Users/teck/Desktop/speed.js/packages/bench/src/bench.ts"
+      },
+      "hydrationMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "happy-dom + @speedjs/dom.mount(real JSX)",
+        "reason": "happy-dom not installed or dom mount failed: Cannot find package '@speedjs/dom' imported from /Users/teck/Desktop/speed.js/packages/bench/src/bench.ts"
+      },
+      "apiLatencyMs": {
+        "value": 2.864292000000205,
+        "unit": "ms",
+        "min": 2.1150410000000193,
+        "max": 13.123874999999316,
+        "samples": [
+          2.1150410000000193,
+          2.864292000000205,
+          2.2240419999998267,
+          3.0988750000005894,
+          13.123874999999316
+        ],
+        "measured": true,
+        "source": "fetch of local dev server health endpoint (median of 5 successful runs)"
+      },
+      "buildTimeMs": {
+        "value": 740.716375,
+        "unit": "ms",
+        "min": 702.4758750000005,
+        "max": 790.4307089999993,
+        "samples": [
+          755.0487089999997,
+          718.5544999999997,
+          702.4758750000005,
+          740.716375,
+          790.4307089999993
+        ],
+        "measured": true,
+        "source": "vite build command (median of 5 runs after 2 warmups)"
+      },
+      "devServerBootMs": {
+        "value": 539.4460000000017,
+        "unit": "ms",
+        "min": 519.114708000001,
+        "max": 571.7687910000004,
+        "samples": [
+          519.114708000001,
+          571.7687910000004,
+          539.4460000000017,
+          528.183833000001,
+          546.5373340000006
+        ],
+        "measured": true,
+        "source": "vite dev server spawn until \"Local:\" banner (median of 5 runs)"
+      },
+      "ssrRenderMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "@speedjs/server.renderToString on real VDOM tree",
+        "reason": "@speedjs/server or @speedjs/dom jsx runtime not loadable"
+      },
+      "staticGenTimeMs": {
+        "value": null,
+        "unit": "ms",
+        "measured": false,
+        "source": "@speedjs/server.renderToString on static VDOM tree",
+        "reason": "@speedjs/server or @speedjs/dom jsx runtime not loadable"
+      },
+      "memoryUsageMb": {
+        "value": 24.492034912109375,
+        "unit": "mb",
+        "min": 24.477813720703125,
+        "max": 24.495498657226562,
+        "samples": [
+          24.477813720703125,
+          24.49018096923828,
+          24.492034912109375,
+          24.49402618408203,
+          24.495498657226562
+        ],
+        "measured": true,
+        "source": "process.memoryUsage().heapUsed (median of 5 samples)"
+      }
+    },
+    "budget": {
+      "status": "passed",
+      "dataQuality": "insufficient",
+      "measuredCount": 2,
+      "unmeasuredMetrics": [
+        "hydrationMs",
+        "routeRenderMs",
+        "ssrRenderMs",
+        "staticGenTimeMs"
+      ],
+      "failures": [],
+      "actionable": [
+        "Benchmark data is incomplete. Not measured: hydrationMs, routeRenderMs, ssrRenderMs, staticGenTimeMs. These metrics were not measured in this environment; the budget cannot fully judge them."
+      ],
+      "limits": {
+        "initialJsKb": {
+          "value": 40,
+          "unit": "kb"
+        },
+        "buildTimeMs": {
+          "value": 3000,
+          "unit": "ms"
+        },
+        "hydrationMs": {
+          "value": 50,
+          "unit": "ms"
+        }
+      }
+    },
+    "methodology": {
+      "runs": 5,
+      "warmups": 2,
+      "reportedValue": "median",
+      "notes": [
+        "Initial JS and build time measured against production vite build output",
+        "Route render measured via @speedjs/router.matchRoute() against a 3-route manifest including [id] dynamic segment",
+        "Hydration measured via @speedjs/dom.mount(real JSX component) into a fresh happy-dom Window per iteration",
+        "API latency measured against local dev server health endpoint when available",
+        "SSR + static gen measured via @speedjs/server.renderToString on real VDOM trees built via @speedjs/dom jsx-runtime",
+        "Memory usage measured via process.memoryUsage().heapUsed; --expose-gc is NOT set under tsx so absolute values reflect natural heap",
+        "Dev server boot measured from spawn to first \"Local:\" banner output"
+      ]
+    }
+  },
+  {
+    "schemaVersion": "1.0",
+    "framework": "speedjs",
+    "app": "starter",
+    "source": "@speedjs/bench + examples/starter",
     "commit": "e4b620642ea570a59711819c89b026d088a4d019",
     "branch": "main",
     "timestamp": "2026-06-23T21:26:43.750Z",

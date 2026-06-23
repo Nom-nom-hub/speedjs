@@ -120,13 +120,19 @@ async function runSsrRender(): Promise<Metric> {
   for (let i = 0; i < TOTAL; i++) {
     const start = performance.now()
     try {
-      const mod = await import('@speedjs/server')
-      if (typeof mod.renderToString === 'function') {
-        await mod.renderToString('<div>benchmark</div>')
+      const { renderToString } = await import('@speedjs/server')
+      const { jsx } = await import('@speedjs/dom/jsx-runtime')
+      if (typeof renderToString === 'function' && typeof jsx === 'function') {
+        // Render a REAL VDOM tree, not a string literal — string-only meant we
+        // were just timing HTML escaping, not actual SSR of a component tree.
+        const tree = jsx('div', {
+          children: jsx('span', { children: `ssr run ${i}` }),
+        })
+        renderToString(tree)
         imported = true
       }
     } catch {
-      /* @speedjs/server not available */
+      /* @speedjs/server or jsx runtime not available */
     }
     const elapsed = performance.now() - start
     if (i >= WARMUPS) samples.push(elapsed)
@@ -134,11 +140,15 @@ async function runSsrRender(): Promise<Metric> {
   if (!imported) {
     return unmeasured(
       'ms',
-      '@speedjs/server.renderToString("<div>benchmark</div>")',
-      '@speedjs/server package not loadable; falling back would have hidden the truth',
+      '@speedjs/server.renderToString on real VDOM tree',
+      '@speedjs/server or @speedjs/dom jsx runtime not loadable',
     )
   }
-  return measured(samples, 'ms', '@speedjs/server.renderToString on synthetic tree (median of 5 runs)')
+  return measured(
+    samples,
+    'ms',
+    '@speedjs/server.renderToString on a real VDOM tree built via @speedjs/dom jsx-runtime (median of 5 runs)',
+  )
 }
 
 async function runDevServerBoot(cwd: string): Promise<Metric> {
@@ -166,25 +176,83 @@ async function runDevServerBoot(cwd: string): Promise<Metric> {
 }
 
 async function runRouteRenderBench(): Promise<Metric> {
-  // The previous code ran a synthetic 1000-iteration addition loop and called it
-  // "route render". That is dishonest. We refuse to call that a route render
-  // measurement and explicitly tag it as not_measured.
-  return unmeasured(
-    'ms',
-    'would have been: 1000-iteration addition loop',
-    'synthetic loop does not exercise the route renderer; no real measurement performed',
-  )
+  const samples: number[] = []
+  const routes: Array<{ id: string; path: string; file: string }> = [
+    { id: 'home', path: '/', file: 'index.tsx' },
+    { id: 'docs', path: '/docs/signals', file: 'docs/signals.tsx' },
+    { id: 'user', path: '/users/[id]', file: 'users/[id].tsx' },
+  ]
+  try {
+    const { matchRoute } = await import('@speedjs/router')
+    for (let i = 0; i < TOTAL; i++) {
+      const start = performance.now()
+      matchRoute(routes, '/users/42')
+      const elapsed = performance.now() - start
+      if (i >= WARMUPS) samples.push(elapsed)
+    }
+    if (samples.length === 0) {
+      return unmeasured('ms', '@speedjs/router.matchRoute', 'no samples recorded')
+    }
+    return measured(
+      samples,
+      'ms',
+      '@speedjs/router.matchRoute against 3-route manifest including [id] dynamic segment (median of 5 runs)',
+    )
+  } catch (e: any) {
+    return unmeasured(
+      'ms',
+      '@speedjs/router.matchRoute',
+      `@speedjs/router not loadable: ${e?.message ?? 'unknown error'}`,
+    )
+  }
 }
 
 async function runHydrationBench(): Promise<Metric> {
-  // Even if @speedjs/dom.mount() succeeds, mounting a string into a fake DOM node
-  // is not the same as hydrating a real tree. We mark this unmeasured until we
-  // run against an actual DOM environment.
-  return unmeasured(
-    'ms',
-    'would have been: @speedjs/dom.mount() on synthetic node',
-    'mount target is a mock object; not representative of real DOM hydration',
-  )
+  try {
+    const [{ Window }, { mount }, { jsx }] = await Promise.all([
+      import('happy-dom'),
+      import('@speedjs/dom'),
+      import('@speedjs/dom/jsx-runtime'),
+    ])
+    const samples: number[] = []
+    const prevDoc = (globalThis as any).document
+    const prevWindow = (globalThis as any).window
+    for (let i = 0; i < TOTAL; i++) {
+      const win = new Window()
+      const doc = win.document
+      // Inject the happy-dom Window into globals so @speedjs/dom's calls to
+      // `document.createElement` etc. resolve to a real DOM tree.
+      ;(globalThis as any).document = doc
+      ;(globalThis as any).window = win
+
+      try {
+        const root = doc.createElement('div')
+        const Component = () => jsx('div', { children: `hydration run ${i}` })
+        const start = performance.now()
+        mount(Component, root)
+        const elapsed = performance.now() - start
+        if (i >= WARMUPS) samples.push(elapsed)
+      } finally {
+        win.close?.()
+      }
+    }
+    ;(globalThis as any).document = prevDoc
+    ;(globalThis as any).window = prevWindow
+    if (samples.length === 0) {
+      return unmeasured('ms', 'happy-dom + @speedjs/dom.mount(real JSX)', 'no samples recorded')
+    }
+    return measured(
+      samples,
+      'ms',
+      'happy-dom Window + @speedjs/dom.mount(real JSXNode); fresh DOM per iteration (median of 5 runs)',
+    )
+  } catch (e: any) {
+    return unmeasured(
+      'ms',
+      'happy-dom + @speedjs/dom.mount(real JSX)',
+      `happy-dom not installed or dom mount failed: ${e?.message ?? 'unknown error'}`,
+    )
+  }
 }
 
 async function runMemoryUsage(): Promise<Metric> {
@@ -204,13 +272,25 @@ async function runStaticGenBench(): Promise<Metric> {
   for (let i = 0; i < TOTAL; i++) {
     const start = performance.now()
     try {
-      const mod = await import('@speedjs/server')
-      if (typeof mod.renderToString === 'function') {
-        await mod.renderToString('<div>static benchmark content</div>')
+      const { renderToString } = await import('@speedjs/server')
+      const { jsx } = await import('@speedjs/dom/jsx-runtime')
+      if (typeof renderToString === 'function' && typeof jsx === 'function') {
+        // A more realistic static-page shape: article + heading + paragraphs.
+        const tree = jsx('article', {
+          children: [
+            jsx('h1', { children: `Static benchmark ${i}` }),
+            jsx('p', {
+              children: jsx('span', {
+                children: 'A reasonably sized body paragraph for static-generation timing.',
+              }),
+            }),
+          ],
+        })
+        renderToString(tree)
         imported = true
       }
     } catch {
-      /* @speedjs/server not available */
+      /* @speedjs/server or jsx runtime not available */
     }
     const elapsed = performance.now() - start
     if (i >= WARMUPS) samples.push(elapsed)
@@ -218,11 +298,15 @@ async function runStaticGenBench(): Promise<Metric> {
   if (!imported) {
     return unmeasured(
       'ms',
-      '@speedjs/server.renderToString("<div>static benchmark content</div>")',
-      '@speedjs/server package not loadable',
+      '@speedjs/server.renderToString on static VDOM tree',
+      '@speedjs/server or @speedjs/dom jsx runtime not loadable',
     )
   }
-  return measured(samples, 'ms', '@speedjs/server.renderToString on static markup (median of 5 runs)')
+  return measured(
+    samples,
+    'ms',
+    '@speedjs/server.renderToString on a realistic static-markup VDOM tree (median of 5 runs)',
+  )
 }
 
 export async function runBenchmark(cwd?: string): Promise<BenchmarkResult> {
@@ -319,12 +403,12 @@ export async function runBenchmark(cwd?: string): Promise<BenchmarkResult> {
       reportedValue: 'median',
       notes: [
         'Initial JS and build time measured against production vite build output',
-        'Route render is not measured; the synthetic loop previously used was removed for honesty',
+        'Route render measured via @speedjs/router.matchRoute() against a 3-route manifest including [id] dynamic segment',
+        'Hydration measured via @speedjs/dom.mount(real JSX component) into a fresh happy-dom Window per iteration',
         'API latency measured against local dev server health endpoint when available',
-        'SSR/static gen measured from @speedjs/server when loadable; otherwise marked not_measured',
-        'Hydration not measured: a mock DOM node is not representative',
-        'Memory usage measured via process.memoryUsage().heapUsed',
-        'Dev server boot measured from spawn to first Local: output',
+        'SSR + static gen measured via @speedjs/server.renderToString on real VDOM trees built via @speedjs/dom jsx-runtime',
+        'Memory usage measured via process.memoryUsage().heapUsed; --expose-gc is NOT set under tsx so absolute values reflect natural heap',
+        'Dev server boot measured from spawn to first "Local:" banner output',
       ],
     },
   }
