@@ -1,4 +1,4 @@
-import { JSXElement } from '@speedjs/dom';
+import type { JSXElement } from '../../dom/src/jsx-runtime';
 
 export function renderToString(node: JSXElement): string {
   return renderNode(node);

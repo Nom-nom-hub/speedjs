@@ -5,7 +5,7 @@
   "source": "@speedjs/bench + examples/starter",
   "commit": "3c092036e25c985c7694b19d895593f946817347",
   "branch": "main",
-  "timestamp": "2026-06-23T21:45:55.316Z",
+  "timestamp": "2026-06-23T21:36:52.335Z",
   "machine": {
     "platform": "darwin",
     "cpu": "Apple M1",
@@ -37,121 +37,113 @@
       "source": "sum of dist/assets/*.js sizes (median of 5 runs after 2 warmups)"
     },
     "routeRenderMs": {
-      "value": 0.005000000000109139,
+      "value": 0.004125000000385626,
       "unit": "ms",
-      "min": 0.0041659999997136765,
-      "max": 0.010166999999455584,
+      "min": 0.001916999999593827,
+      "max": 0.04829200000040146,
       "samples": [
-        0.010166999999455584,
-        0.004332999999860476,
-        0.006000000000312866,
-        0.0041659999997136765,
-        0.005000000000109139
+        0.013625000000502041,
+        0.004125000000385626,
+        0.04829200000040146,
+        0.004125000000385626,
+        0.001916999999593827
       ],
       "measured": true,
-      "source": "@speedjs/router.matchRoute(match) resolution (NOT render-to-DOM) against 3-route manifest including [id] dynamic segment (median of 5 runs)"
+      "source": "@speedjs/router.matchRoute against 3-route manifest including [id] dynamic segment (median of 5 runs)"
     },
     "hydrationMs": {
-      "value": 0.029875000000174623,
+      "value": null,
       "unit": "ms",
-      "min": 0.025916999999935797,
-      "max": 0.031792000000677945,
-      "samples": [
-        0.031792000000677945,
-        0.025916999999935797,
-        0.026792000000568805,
-        0.030375000000276486,
-        0.029875000000174623
-      ],
-      "measured": true,
-      "source": "happy-dom Window + @speedjs/dom.mount(real JSX component); fresh DOM per iteration (median of 5 runs)"
+      "measured": false,
+      "source": "happy-dom + @speedjs/dom.mount(real JSX)",
+      "reason": "happy-dom not installed or dom mount failed: Cannot find package '@speedjs/dom' imported from /Users/teck/Desktop/speed.js/packages/bench/src/bench.ts"
     },
     "apiLatencyMs": {
-      "value": 2.6087079999997513,
+      "value": 2.6506250000002183,
       "unit": "ms",
-      "min": 1.8626249999997526,
-      "max": 4.548125000000255,
+      "min": 1.9873339999994641,
+      "max": 3.0515830000003916,
       "samples": [
-        2.741624999999658,
-        2.489749999999731,
-        4.548125000000255,
-        2.6087079999997513,
-        1.8626249999997526
+        1.9873339999994641,
+        2.775416999999834,
+        2.6506250000002183,
+        2.2738329999992857,
+        3.0515830000003916
       ],
       "measured": true,
       "source": "fetch of local dev server health endpoint (median of 5 successful runs)"
     },
     "buildTimeMs": {
-      "value": 864.1147500000002,
+      "value": 722.5026659999994,
       "unit": "ms",
-      "min": 845.0419999999995,
-      "max": 1041.632917,
+      "min": 699.4330410000002,
+      "max": 841.3266250000001,
       "samples": [
-        864.1147500000002,
-        1041.632917,
-        845.0419999999995,
-        862.1266249999999,
-        866.6258749999997
+        703.0919590000001,
+        772.4997080000003,
+        699.4330410000002,
+        841.3266250000001,
+        722.5026659999994
       ],
       "measured": true,
       "source": "vite build command (median of 5 runs after 2 warmups)"
     },
     "devServerBootMs": {
-      "value": 548.3970410000002,
+      "value": 519.4140420000003,
       "unit": "ms",
-      "min": 530.7843749999993,
-      "max": 687.4891250000001,
+      "min": 506.72654200000034,
+      "max": 580.3935840000004,
       "samples": [
-        530.7843749999993,
-        535.5538340000003,
-        687.4891250000001,
-        550.9074999999993,
-        548.3970410000002
+        519.4140420000003,
+        515.2914169999995,
+        580.3935840000004,
+        521.6013329999987,
+        506.72654200000034
       ],
       "measured": true,
       "source": "vite dev server spawn until \"Local:\" banner (median of 5 runs)"
     },
     "ssrRenderMs": {
-      "value": 0.007041999999273685,
+      "value": 0.039374999999381544,
       "unit": "ms",
-      "min": 0.0035410000000410946,
-      "max": 0.01445899999998801,
+      "min": 0.03583299999991141,
+      "max": 0.06612500000028376,
       "samples": [
-        0.008291999999528343,
-        0.01445899999998801,
-        0.007041999999273685,
-        0.0037080000001878943,
-        0.0035410000000410946
+        0.06612500000028376,
+        0.05770899999970425,
+        0.039374999999381544,
+        0.03583299999991141,
+        0.03887499999927968
       ],
       "measured": true,
-      "source": "@speedjs/server.renderToString on a real nested DOM tree built via @speedjs/dom jsx-runtime (median of 5 runs)"
+      "source": "@speedjs/server.renderToString on a real VDOM tree built via @speedjs/dom jsx-runtime (median of 5 runs)"
     },
     "staticGenTimeMs": {
-      "value": 0.004791999999724794,
+      "value": 0.030582999999751337,
       "unit": "ms",
-      "min": 0.004542000000583357,
-      "max": 0.005709000000024389,
+      "min": 0.02979200000027049,
+      "max": 0.0342080000000351,
       "samples": [
-        0.005709000000024389,
-        0.004874999999628926,
-        0.004791999999724794,
-        0.004542000000583357,
-        0.004582999999911408
+        0.032000000000152795,
+        0.030582999999751337,
+        0.02979200000027049,
+        0.03029100000003382,
+        0.0342080000000351
       ],
       "measured": true,
       "source": "@speedjs/server.renderToString on a realistic static-markup VDOM tree (median of 5 runs)"
     },
     "memoryUsageMb": {
-      "value": 27.939804077148438,
+      "value": 21.534706115722656,
       "unit": "mb",
-      "min": 27.93041229248047,
-      "max": 27.942794799804688,
+      "min": 21.520484924316406,
+      "max": 21.538169860839844,
       "samples": [
-        27.93041229248047,
-        27.937957763671875,
-        27.939804077148438,
-        27.94127655029297,
-        27.942794799804688
+        21.520484924316406,
+        21.532852172851562,
+        21.534706115722656,
+        21.536697387695312,
+        21.538169860839844
       ],
       "measured": true,
       "source": "process.memoryUsage().heapUsed (median of 5 samples)"
@@ -159,11 +151,15 @@
   },
   "budget": {
     "status": "passed",
-    "dataQuality": "complete",
-    "measuredCount": 3,
-    "unmeasuredMetrics": [],
+    "dataQuality": "partial",
+    "measuredCount": 2,
+    "unmeasuredMetrics": [
+      "hydrationMs"
+    ],
     "failures": [],
-    "actionable": [],
+    "actionable": [
+      "Benchmark data is incomplete. Not measured: hydrationMs. These metrics were not measured in this environment; the budget cannot fully judge them."
+    ],
     "limits": {
       "initialJsKb": {
         "value": 40,

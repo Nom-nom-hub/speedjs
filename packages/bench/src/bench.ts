@@ -116,39 +116,40 @@ async function runApiLatency(url: string): Promise<Metric> {
 
 async function runSsrRender(): Promise<Metric> {
   const samples: number[] = []
-  let imported = false
-  for (let i = 0; i < TOTAL; i++) {
-    const start = performance.now()
-    try {
-      const { renderToString } = await import('@speedjs/server')
-      const { jsx } = await import('@speedjs/dom/jsx-runtime')
-      if (typeof renderToString === 'function' && typeof jsx === 'function') {
-        // Render a REAL VDOM tree, not a string literal — string-only meant we
-        // were just timing HTML escaping, not actual SSR of a component tree.
-        const tree = jsx('div', {
-          children: jsx('span', { children: `ssr run ${i}` }),
-        })
-        renderToString(tree)
-        imported = true
-      }
-    } catch {
-      /* @speedjs/server or jsx runtime not available */
+  try {
+    // Hoist imports OUTSIDE the measured loop: dynamic-import cost is
+    // captured once at warmup; only `renderToString(tree)` runs are timed.
+    const { renderToString } = await import('../../server/src/render')
+    const { jsx } = await import('../../dom/src/jsx-runtime')
+    if (typeof renderToString !== 'function' || typeof jsx !== 'function') {
+      return unmeasured(
+        'ms',
+        '@speedjs/server.renderToString on real VDOM tree',
+        '@speedjs/server or @speedjs/dom jsx runtime did not expose expected functions',
+      )
     }
-    const elapsed = performance.now() - start
-    if (i >= WARMUPS) samples.push(elapsed)
-  }
-  if (!imported) {
+    for (let i = 0; i < TOTAL; i++) {
+      const start = performance.now()
+      // Render a REAL nested DOM tree, not a string literal.
+      const tree = jsx('div', {
+        children: jsx('span', { children: `ssr run ${i}` }),
+      })
+      renderToString(tree)
+      const elapsed = performance.now() - start
+      if (i >= WARMUPS) samples.push(elapsed)
+    }
+    return measured(
+      samples,
+      'ms',
+      '@speedjs/server.renderToString on a real nested DOM tree built via @speedjs/dom jsx-runtime (median of 5 runs)',
+    )
+  } catch (e: any) {
     return unmeasured(
       'ms',
       '@speedjs/server.renderToString on real VDOM tree',
-      '@speedjs/server or @speedjs/dom jsx runtime not loadable',
+      `@speedjs/server or jsx runtime not loadable: ${e?.message ?? 'unknown error'}`,
     )
   }
-  return measured(
-    samples,
-    'ms',
-    '@speedjs/server.renderToString on a real VDOM tree built via @speedjs/dom jsx-runtime (median of 5 runs)',
-  )
 }
 
 async function runDevServerBoot(cwd: string): Promise<Metric> {
@@ -183,9 +184,13 @@ async function runRouteRenderBench(): Promise<Metric> {
     { id: 'user', path: '/users/[id]', file: 'users/[id].tsx' },
   ]
   try {
-    const { matchRoute } = await import('@speedjs/router')
+    const { matchRoute } = await import('../../router/src/matcher')
     for (let i = 0; i < TOTAL; i++) {
       const start = performance.now()
+      // ROUTE MATCH resolution — distinguishes from "render the matched
+      // route to DOM", which is a different (slower) operation. The metric
+      // key remains `routeRenderMs` for schema stability; the source label
+      // is explicit about what was measured.
       matchRoute(routes, '/users/42')
       const elapsed = performance.now() - start
       if (i >= WARMUPS) samples.push(elapsed)
@@ -196,7 +201,7 @@ async function runRouteRenderBench(): Promise<Metric> {
     return measured(
       samples,
       'ms',
-      '@speedjs/router.matchRoute against 3-route manifest including [id] dynamic segment (median of 5 runs)',
+      '@speedjs/router.matchRoute(match) resolution (NOT render-to-DOM) against 3-route manifest including [id] dynamic segment (median of 5 runs)',
     )
   } catch (e: any) {
     return unmeasured(
@@ -208,15 +213,17 @@ async function runRouteRenderBench(): Promise<Metric> {
 }
 
 async function runHydrationBench(): Promise<Metric> {
+  // Snapshot globals up front. We use try/finally around the entire loop so
+  // the restore lines fire even if happy-dom or the mount call throws.
+  const prevDoc = (globalThis as any).document
+  const prevWindow = (globalThis as any).window
   try {
-    const [{ Window }, { mount }, { jsx }] = await Promise.all([
-      import('happy-dom'),
-      import('@speedjs/dom'),
-      import('@speedjs/dom/jsx-runtime'),
-    ])
+    // Sequential imports — clearer error attribution if happy-dom or one of
+    // the @speedjs/* workspace sources is missing.
+    const { Window } = await import('happy-dom')
+    const { mount } = await import('../../dom/src/renderer')
+    const { jsx } = await import('../../dom/src/jsx-runtime')
     const samples: number[] = []
-    const prevDoc = (globalThis as any).document
-    const prevWindow = (globalThis as any).window
     for (let i = 0; i < TOTAL; i++) {
       const win = new Window()
       const doc = win.document
@@ -226,7 +233,9 @@ async function runHydrationBench(): Promise<Metric> {
       ;(globalThis as any).window = win
 
       try {
-        const root = doc.createElement('div')
+        // happy-dom's createElement returns HTMLDivElement (more specific than
+        // the DOM lib's HTMLElement); cast to HTMLElement for mount().
+        const root = doc.createElement('div') as unknown as HTMLElement
         const Component = () => jsx('div', { children: `hydration run ${i}` })
         const start = performance.now()
         mount(Component, root)
@@ -236,15 +245,13 @@ async function runHydrationBench(): Promise<Metric> {
         win.close?.()
       }
     }
-    ;(globalThis as any).document = prevDoc
-    ;(globalThis as any).window = prevWindow
     if (samples.length === 0) {
-      return unmeasured('ms', 'happy-dom + @speedjs/dom.mount(real JSX)', 'no samples recorded')
+      return unmeasured('ms', 'happy-dom + @speedjs/dom.mount(real JSX)', 'no samples recorded despite loop completion')
     }
     return measured(
       samples,
       'ms',
-      'happy-dom Window + @speedjs/dom.mount(real JSXNode); fresh DOM per iteration (median of 5 runs)',
+      'happy-dom Window + @speedjs/dom.mount(real JSX component); fresh DOM per iteration (median of 5 runs)',
     )
   } catch (e: any) {
     return unmeasured(
@@ -252,6 +259,10 @@ async function runHydrationBench(): Promise<Metric> {
       'happy-dom + @speedjs/dom.mount(real JSX)',
       `happy-dom not installed or dom mount failed: ${e?.message ?? 'unknown error'}`,
     )
+  } finally {
+    // Restore previous globals so other bench measurements aren't polluted.
+    ;(globalThis as any).document = prevDoc
+    ;(globalThis as any).window = prevWindow
   }
 }
 
@@ -268,45 +279,47 @@ async function runMemoryUsage(): Promise<Metric> {
 
 async function runStaticGenBench(): Promise<Metric> {
   const samples: number[] = []
-  let imported = false
-  for (let i = 0; i < TOTAL; i++) {
-    const start = performance.now()
-    try {
-      const { renderToString } = await import('@speedjs/server')
-      const { jsx } = await import('@speedjs/dom/jsx-runtime')
-      if (typeof renderToString === 'function' && typeof jsx === 'function') {
-        // A more realistic static-page shape: article + heading + paragraphs.
-        const tree = jsx('article', {
-          children: [
-            jsx('h1', { children: `Static benchmark ${i}` }),
-            jsx('p', {
-              children: jsx('span', {
-                children: 'A reasonably sized body paragraph for static-generation timing.',
-              }),
-            }),
-          ],
-        })
-        renderToString(tree)
-        imported = true
-      }
-    } catch {
-      /* @speedjs/server or jsx runtime not available */
+  try {
+    // Hoist imports OUTSIDE the measured loop — only `renderToString(tree)`
+    // runs are timed, not dynamic-import cost.
+    const { renderToString } = await import('../../server/src/render')
+    const { jsx } = await import('../../dom/src/jsx-runtime')
+    if (typeof renderToString !== 'function' || typeof jsx !== 'function') {
+      return unmeasured(
+        'ms',
+        '@speedjs/server.renderToString on static VDOM tree',
+        '@speedjs/server or @speedjs/dom jsx runtime did not expose expected functions',
+      )
     }
-    const elapsed = performance.now() - start
-    if (i >= WARMUPS) samples.push(elapsed)
-  }
-  if (!imported) {
+    for (let i = 0; i < TOTAL; i++) {
+      const start = performance.now()
+      // Realistic static-page shape: article containing heading + nested paragraphs.
+      const tree = jsx('article', {
+        children: [
+          jsx('h1', { children: `Static benchmark ${i}` }),
+          jsx('p', {
+            children: jsx('span', {
+              children: 'A reasonably sized body paragraph for static-generation timing.',
+            }),
+          }),
+        ],
+      })
+      renderToString(tree)
+      const elapsed = performance.now() - start
+      if (i >= WARMUPS) samples.push(elapsed)
+    }
+    return measured(
+      samples,
+      'ms',
+      '@speedjs/server.renderToString on a realistic static-markup VDOM tree (median of 5 runs)',
+    )
+  } catch (e: any) {
     return unmeasured(
       'ms',
       '@speedjs/server.renderToString on static VDOM tree',
-      '@speedjs/server or @speedjs/dom jsx runtime not loadable',
+      `@speedjs/server or jsx runtime not loadable: ${e?.message ?? 'unknown error'}`,
     )
   }
-  return measured(
-    samples,
-    'ms',
-    '@speedjs/server.renderToString on a realistic static-markup VDOM tree (median of 5 runs)',
-  )
 }
 
 export async function runBenchmark(cwd?: string): Promise<BenchmarkResult> {
@@ -507,15 +520,15 @@ export function evaluateBudget(metrics: Metrics, limits: BudgetLimits): BudgetEv
   // dataQuality is derived from the additional metric slots: if every
   // supplementary measure is missing, the artifact can't characterize the
   // framework's behavior even when the budget itself is satisfied.
+  // Single threshold: >= half the supplementary slots = 'insufficient';
+  // any unmeasured at all = 'partial'; none = 'complete'.
   const totalBudgetMetrics = ADDITIONAL_METRIC_KEYS.length
   const dataQuality: 'complete' | 'partial' | 'insufficient' =
-    unmeasured.length >= totalBudgetMetrics
-      ? 'insufficient'
+    unmeasured.length === 0
+      ? 'complete'
       : unmeasured.length >= totalBudgetMetrics / 2
         ? 'insufficient'
-        : unmeasured.length === 0
-          ? 'complete'
-          : 'partial'
+        : 'partial'
 
   return {
     status: failures.length === 0 ? 'passed' : 'failed',
