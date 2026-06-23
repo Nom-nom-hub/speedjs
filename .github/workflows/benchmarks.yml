@@ -3,6 +3,9 @@ name: Benchmarks
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'examples/speedjs-site/public/benchmarks/**'
+      - '.benchmarks/**'
   pull_request:
     branches: [main]
   schedule:
@@ -12,6 +15,8 @@ on:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Auto-commit benchmark updates back to main
 
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +39,6 @@ jobs:
       - name: Re-link workspace bin shims
         run: pnpm install --frozen-lockfile
 
-
       - name: Typecheck
         run: pnpm typecheck
 
@@ -44,6 +48,36 @@ jobs:
       - name: Run benchmarks
         run: pnpm bench
         continue-on-error: true
+
+      - name: Publish benchmark snapshot to website
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p examples/speedjs-site/public/benchmarks/history
+          if [ -f .benchmarks/latest.json ]; then
+            cp .benchmarks/latest.json examples/speedjs-site/public/benchmarks/latest.json
+          fi
+          if [ -f .benchmarks/budget-latest.json ]; then
+            cp .benchmarks/budget-latest.json examples/speedjs-site/public/benchmarks/budget-latest.json
+          fi
+          if [ -f .benchmarks/history.json ]; then
+            cp .benchmarks/history.json examples/speedjs-site/public/benchmarks/history.json
+          fi
+          if [ -d .benchmarks/history ]; then
+            cp -r .benchmarks/history/. examples/speedjs-site/public/benchmarks/history/ 2>/dev/null || true
+          fi
+
+      - name: Auto-commit benchmark snapshot
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name  "github-actions[bot]"
+          git add examples/speedjs-site/public/benchmarks/
+          if git diff --staged --quiet; then
+            echo 'No benchmark changes to commit.'
+          else
+            git commit -m "chore(bench): update public benchmark snapshot [skip ci]"
+            git push
+          fi
 
       - name: Save benchmark artifacts
         uses: actions/upload-artifact@v4
@@ -55,11 +89,3 @@ jobs:
             .benchmarks/raw/*.log
             .benchmarks/comparisons/*.json
           if-no-files-found: ignore
-
-      - name: Deploy benchmark data to public endpoint
-        if: github.ref == 'refs/heads/main'
-        run: |
-          mkdir -p .benchmarks/public
-          cp .benchmarks/latest.json .benchmarks/public/latest.json 2>/dev/null || true
-          cp .benchmarks/history/*.json .benchmarks/public/ 2>/dev/null || true
-          echo "Benchmark data prepared for deployment"
