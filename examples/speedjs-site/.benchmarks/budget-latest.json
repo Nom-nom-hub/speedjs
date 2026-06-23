@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-06-23T20:39:49.414Z",
+  "maxInitialJS": "40kb",
+  "actualInitialJS": "84.6kb",
+  "maxRouteJS": "25kb",
+  "actualRouteJS": "— (not measured)",
+  "maxBuildMs": 3000,
+  "actualBuildMs": 716.762833,
+  "maxHydrationMs": 50,
+  "actualHydrationMs": "— (not measured)",
+  "status": "failed",
+  "failures": [
+    {
+      "metric": "maxInitialJS",
+      "actual": "84.6kb",
+      "limit": "40kb",
+      "suggestion": "Split heavy components. Lazy load non-critical modules."
+    }
+  ],
+  "suggestions": [
+    "Split heavy components",
+    "Lazy load non-critical modules",
+    "Review bundle composition"
+  ]
+}

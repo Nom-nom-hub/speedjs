@@ -1,0 +1,32 @@
+{
+  "name": "speed-js",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A compiler-first, full-stack TypeScript framework for extreme performance",
+  "scripts": {
+    "dev": "pnpm --filter examples-starter dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "framework",
+    "typescript",
+    "performance",
+    "ssr",
+    "signals"
+  ],
+  "author": "Speed.js",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

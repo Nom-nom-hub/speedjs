@@ -1,0 +1,157 @@
+{
+  "framework": "speedjs",
+  "app": "starter",
+  "commit": "unknown",
+  "branch": "unknown",
+  "timestamp": "2026-06-23T01:51:49.566Z",
+  "machine": {
+    "platform": "darwin",
+    "cpu": "Apple M1",
+    "cores": 8,
+    "memory": "8.0GB",
+    "node": "v26.0.0",
+    "bun": "1.3.14",
+    "pnpm": "8.15.0"
+  },
+  "commands": {
+    "install": "pnpm install",
+    "build": "pnpm build",
+    "bench": "pnpm bench"
+  },
+  "metrics": {
+    "initialJsKb": {
+      "median": 82.76171875,
+      "min": 82.76171875,
+      "max": 82.76171875,
+      "unit": "kb",
+      "samples": [
+        82.76171875,
+        82.76171875,
+        82.76171875,
+        82.76171875,
+        82.76171875
+      ]
+    },
+    "routeRenderMs": {
+      "median": 0.01062499999989086,
+      "min": 0.010583999999653315,
+      "max": 0.010666999999557447,
+      "unit": "ms",
+      "samples": [
+        0.010666999999557447,
+        0.01062499999989086,
+        0.010583999999653315,
+        0.01062499999989086,
+        0.010625000000800355
+      ]
+    },
+    "hydrationMs": {
+      "median": 0.10337499999968713,
+      "min": 0.10049999999955617,
+      "max": 0.12241700000049605,
+      "unit": "ms",
+      "samples": [
+        0.12241700000049605,
+        0.11133299999983137,
+        0.10337499999968713,
+        0.10049999999955617,
+        0.10187500000029104
+      ]
+    },
+    "apiLatencyMs": {
+      "median": 1.9445409999998446,
+      "min": 1.8355000000001382,
+      "max": 4.346958000000086,
+      "unit": "ms",
+      "samples": [
+        2.2797090000003664,
+        4.346958000000086,
+        1.9445409999998446,
+        1.8355000000001382,
+        1.9193750000004002
+      ]
+    },
+    "buildTimeMs": {
+      "median": 990.2054170000001,
+      "min": 939.7815,
+      "max": 1137.75025,
+      "unit": "ms",
+      "samples": [
+        990.2054170000001,
+        939.7815,
+        1137.75025,
+        1013.385792,
+        959.3601669999998
+      ]
+    },
+    "devServerBootMs": {
+      "median": 575.2950000000001,
+      "min": 558.0944999999992,
+      "max": 610.6623749999999,
+      "unit": "ms",
+      "samples": [
+        558.0944999999992,
+        592.4070000000011,
+        610.6623749999999,
+        559.1782920000005,
+        575.2950000000001
+      ]
+    },
+    "ssrRenderMs": {
+      "median": 0.11033299999962765,
+      "min": 0.09929100000044855,
+      "max": 0.13770900000054098,
+      "unit": "ms",
+      "samples": [
+        0.13770900000054098,
+        0.12391700000080164,
+        0.11033299999962765,
+        0.10645799999929295,
+        0.09929100000044855
+      ]
+    },
+    "staticGenTimeMs": {
+      "median": 0.10216599999967002,
+      "min": 0.09783400000014808,
+      "max": 0.10987500000010186,
+      "unit": "ms",
+      "samples": [
+        0.10658299999977316,
+        0.10987500000010186,
+        0.10216599999967002,
+        0.09787500000038563,
+        0.09783400000014808
+      ]
+    },
+    "memoryUsageMb": {
+      "median": 19.21692657470703,
+      "min": 19.20360565185547,
+      "max": 19.22039031982422,
+      "unit": "mb",
+      "samples": [
+        19.20360565185547,
+        19.215072631835938,
+        19.21692657470703,
+        19.218917846679688,
+        19.22039031982422
+      ]
+    }
+  },
+  "budget": {
+    "status": "passed",
+    "failures": []
+  },
+  "methodology": {
+    "runs": 5,
+    "warmups": 2,
+    "reportedValue": "median",
+    "notes": [
+      "Initial JS and build time measured against production vite build output",
+      "Route render uses a synthetic 1000-iteration loop benchmark",
+      "API latency measured against local dev server health endpoint",
+      "Hydration and SSR measured from @speedjs/server and @speedjs/dom packages",
+      "Memory usage measured via process.memoryUsage()",
+      "Dev server boot measured from spawn to first Local: output"
+    ]
+  }
+}

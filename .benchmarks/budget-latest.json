@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-06-22T15:30:00.000Z",
+  "maxInitialJS": "40kb",
+  "actualInitialJS": "14.2kb",
+  "maxRouteJS": "25kb",
+  "actualRouteJS": "— (not measured)",
+  "maxBuildMs": 3000,
+  "actualBuildMs": 1800,
+  "maxHydrationMs": 50,
+  "actualHydrationMs": "— (not measured)",
+  "status": "passed",
+  "failures": [],
+  "suggestions": []
+}

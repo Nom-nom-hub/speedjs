@@ -1,0 +1,8 @@
+{
+  "status": "pending",
+  "message": "Comparison benchmarks are not yet available. Controlled benchmark apps for other frameworks (Next.js, React+Vite, Astro, SolidStart, SvelteKit) need to be added to benchmarks/apps/ before comparisons can run.",
+  "timestamp": "2026-06-22T15:30:00.000Z",
+  "availableComparisons": [],
+  "setup": "See benchmarks/README.md for setup instructions.",
+  "methodology": "Comparisons will use the same machine, same Node version, same number of runs, production build only, median reported."
+}

@@ -1,0 +1,32 @@
+{
+  "name": "speedjs-site",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "speed dev",
+    "build": "speed build",
+    "preview": "speed preview",
+    "bench": "speed bench",
+    "doctor": "speed doctor",
+    "routes": "speed routes",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@speedjs/core": "workspace:*",
+    "@speedjs/dom": "workspace:*",
+    "@speedjs/router": "workspace:*",
+    "@speedjs/server": "workspace:*"
+  },
+  "devDependencies": {
+    "@speedjs/bench": "workspace:*",
+    "@speedjs/cli": "workspace:*",
+    "@speedjs/compiler": "workspace:*",
+    "@speedjs/vite": "workspace:*",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.1.0",
+    "vitest": "^1.4.0"
+  }
+}
