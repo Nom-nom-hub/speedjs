@@ -1,18 +1,18 @@
 {
-  "timestamp": "2026-06-23T20:39:49.414Z",
+  "timestamp": "2026-06-23T20:57:36.782Z",
   "maxInitialJS": "40kb",
-  "actualInitialJS": "84.6kb",
+  "actualInitialJS": "84.7kb",
   "maxRouteJS": "25kb",
   "actualRouteJS": "— (not measured)",
   "maxBuildMs": 3000,
-  "actualBuildMs": 716.762833,
+  "actualBuildMs": 855.820917,
   "maxHydrationMs": 50,
   "actualHydrationMs": "— (not measured)",
   "status": "failed",
   "failures": [
     {
       "metric": "maxInitialJS",
-      "actual": "84.6kb",
+      "actual": "84.7kb",
       "limit": "40kb",
       "suggestion": "Split heavy components. Lazy load non-critical modules."
     }
