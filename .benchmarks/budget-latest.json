@@ -1,14 +1,28 @@
 {
-  "timestamp": "2026-06-22T15:30:00.000Z",
-  "maxInitialJS": "40kb",
-  "actualInitialJS": "14.2kb",
-  "maxRouteJS": "25kb",
-  "actualRouteJS": "— (not measured)",
-  "maxBuildMs": 3000,
-  "actualBuildMs": 1800,
-  "maxHydrationMs": 50,
-  "actualHydrationMs": "— (not measured)",
+  "schemaVersion": "1.0",
+  "timestamp": "2026-06-23T01:51:49.566Z",
+  "framework": "speedjs",
+  "app": "starter",
+  "commit": "unknown",
+  "branch": "unknown",
   "status": "passed",
+  "dataQuality": "complete",
+  "measuredCount": 3,
+  "unmeasured": [],
+  "limits": {
+    "initialJsKb": {
+      "value": 40,
+      "unit": "kb"
+    },
+    "buildTimeMs": {
+      "value": 3000,
+      "unit": "ms"
+    },
+    "hydrationMs": {
+      "value": 50,
+      "unit": "ms"
+    }
+  },
   "failures": [],
-  "suggestions": []
+  "actionable": []
 }

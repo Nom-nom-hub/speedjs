@@ -636,3 +636,102 @@
 .bench-status { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 0.75rem; }
 .bench-status.pass { color: var(--green); }
 .bench-status.fail { color: var(--red); }
+
+/* ─── Budget Status Panel (normalized artifact display) ─── */
+.budget-status-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  font-family: var(--font-mono);
+}
+.budget-status-header {
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+.budget-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+.budget-header-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted-2);
+  min-width: 110px;
+}
+.budget-header-detail .budget-header-label { min-width: auto; }
+.budget-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted-2);
+  font-family: var(--font-mono);
+  margin-left: auto;
+}
+.budget-status-rows { display: flex; flex-direction: column; gap: 14px; }
+.budget-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.02);
+}
+.budget-row-main { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.budget-row-label { font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-sans); }
+.budget-row-value { font-size: 1.05rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.budget-row-limit { color: var(--text-muted-2); font-size: 0.85rem; }
+.budget-row-sub { font-size: 0.78rem; color: var(--text-muted-2); }
+.budget-row-overby { color: var(--red); font-weight: 600; }
+.budget-row-failed {
+  border-color: rgba(239,68,68,0.4);
+  background: rgba(239,68,68,0.06);
+}
+.budget-row-failed .budget-row-value { color: var(--red); font-weight: 600; }
+.budget-row-unmeasured {
+  border-color: rgba(255,204,102,0.25);
+  background: rgba(255,204,102,0.04);
+}
+.budget-row-unmeasured .budget-row-value { color: var(--text-muted-2); }
+.budget-failed { color: var(--red); font-weight: 600; }
+.metric-card-unmeasured { opacity: 0.85; }
+
+/* ─── Budget Actions Panel ─── */
+.budget-actions-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+.budget-actions-panel-ok { background: rgba(57,255,136,0.04); border-color: rgba(57,255,136,0.25); }
+.budget-actions-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.budget-actions-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+.budget-actions-list { display: flex; flex-direction: column; gap: 10px; }
+.budget-actions-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.02);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+.budget-actions-bullet { color: var(--amber); flex-shrink: 0; font-weight: 600; }
+.budget-actions-text { flex: 1; }

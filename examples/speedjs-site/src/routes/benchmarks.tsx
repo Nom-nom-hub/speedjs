@@ -1,4 +1,6 @@
-import { BenchmarkPanel, MetricCard } from '../components/benchmark-panel'
+import { BenchmarkPanel } from '../components/benchmark-panel'
+import { BudgetStatusPanel } from '../components/budget-status-panel'
+import { BudgetActionsPanel } from '../components/budget-actions-panel'
 import { CodeWindow, TerminalWindow } from '../components/code-window'
 
 export default function Benchmarks() {
@@ -19,6 +21,17 @@ export default function Benchmarks() {
 
       <section class="section container" style={{ paddingTop: 0 }}>
         <BenchmarkPanel />
+
+        <h2 style={{ marginTop: 56, marginBottom: 16 }}>Performance budget status</h2>
+        <p style={{ marginBottom: 20, color: 'var(--text-muted)', fontSize: '0.92rem', maxWidth: 720 }}>
+          Verbatim, honest budget evaluation from the normalized artifact. Failed budgets are
+          flagged in red with the exact over-budget amount; metrics that could not be honestly
+          measured are explicitly listed as <em>Not measured</em> instead of being filled with a
+          placeholder.
+        </p>
+        <BudgetStatusPanel />
+        <div style={{ height: 24 }} />
+        <BudgetActionsPanel />
 
         <h2 style={{ marginTop: 48, marginBottom: 20 }}>Data source</h2>
         <p style={{ marginBottom: 16, color: 'var(--text-muted)' }}>

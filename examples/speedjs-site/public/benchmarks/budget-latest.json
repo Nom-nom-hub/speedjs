@@ -1,14 +1,53 @@
 {
-  "timestamp": "2026-06-22T15:30:00.000Z",
-  "maxInitialJS": "40kb",
-  "actualInitialJS": "14.2kb",
-  "maxRouteJS": "25kb",
-  "actualRouteJS": "— (not measured)",
-  "maxBuildMs": 3000,
-  "actualBuildMs": 1800,
-  "maxHydrationMs": 50,
-  "actualHydrationMs": "— (not measured)",
-  "status": "passed",
-  "failures": [],
-  "suggestions": []
+  "schemaVersion": "1.0",
+  "timestamp": "2026-06-23T01:51:49.566Z",
+  "framework": "speedjs",
+  "app": "starter",
+  "commit": "unknown",
+  "branch": "unknown",
+  "status": "failed",
+  "dataQuality": "insufficient",
+  "measuredCount": 2,
+  "unmeasured": [
+    "hydrationMs",
+    "routeRenderMs",
+    "ssrRenderMs",
+    "staticGenTimeMs"
+  ],
+  "limits": {
+    "initialJsKb": {
+      "value": 40,
+      "unit": "kb"
+    },
+    "buildTimeMs": {
+      "value": 3000,
+      "unit": "ms"
+    },
+    "hydrationMs": {
+      "value": 50,
+      "unit": "ms"
+    }
+  },
+  "failures": [
+    {
+      "metric": "initialJsKb",
+      "actual": {
+        "value": 82.76,
+        "unit": "kb"
+      },
+      "limit": {
+        "value": 40,
+        "unit": "kb"
+      },
+      "overBy": {
+        "value": 42.76,
+        "unit": "kb"
+      },
+      "overByPercent": 106.9
+    }
+  ],
+  "actionable": [
+    "Initial JS: payload exceeds 40kb budget by 42.76kb (106.9% over). Code-split heavy dependencies, convert non-interactive sections to server-rendered islands, and verify tree-shaking is on.",
+    "Benchmark data is incomplete. Not measured: hydrationMs, routeRenderMs, ssrRenderMs, staticGenTimeMs. The numbers shown reflect what we could honestly measure in this environment."
+  ]
 }

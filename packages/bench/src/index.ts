@@ -1,15 +1,35 @@
-export { runBenchmark, checkBudgets, printBenchmarkReport, printBudgetReport, formatBytes } from './bench'
+export {
+  runBenchmark,
+  evaluateBudget,
+  checkBudgets,
+  printBenchmarkReport,
+  printBudgetReport,
+  formatBytes,
+} from './bench'
 export { getMachineInfo, getGitInfo } from './machine'
-export { saveBenchmarkResult, loadLatestBenchmark, loadHistoryBenchmarks, loadHistoryForApi, savePublicBenchmarkData } from './storage'
+export {
+  saveBenchmarkResult,
+  loadLatestBenchmark,
+  loadHistoryBenchmarks,
+  loadHistoryForApi,
+  savePublicBenchmarkData,
+} from './storage'
 export type {
+  Quant,
+  Metric,
+  MetricKey,
+  Metrics,
+ MachineInfo,
+  BenchmarkCommands,
+  MethodologyInfo,
+  BudgetLimits,
+  BudgetFailure,
+  BudgetEvaluation,
   BenchmarkResult,
-  BenchmarkMetrics,
-  MetricSample,
-  MachineInfo,
-  BudgetStatus,
   PerformanceBudget,
   BudgetCheckResult,
   ComparisonResult,
-  MethodologyInfo,
-  BenchmarkCommands,
+  SizeUnit,
+  TimeUnit,
+  Unit,
 } from './types'
